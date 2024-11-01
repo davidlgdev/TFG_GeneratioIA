@@ -1,4 +1,6 @@
 import generationQuestionAI from "../models/AIModel.js"; 
+import dotenv from "dotenv"; 
+dotenv.config();
 
 const handlePrompt = (req,res) =>{
     const prompt = req.body.prompt;

@@ -1,5 +1,7 @@
 import express from 'express';
 import handlePrompt from "../controllers/AIController.js";
+import dotenv from "dotenv"; 
+dotenv.config();
 
 
 const router = express.Router();

@@ -1,9 +1,17 @@
-import dotenv from "dotenv"; 
-dotenv.config();
+import * as dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url); //Para leer el URL del archivo
+const __dirname = dirname(__filename); // Extrae el path del directorio (quita el archivo)
+dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Crea un path absoluto saliendose una vez (de models al src) buscando el .env"
 
 const MISTRA_TOKEN = process.env.MISTRA_TOKEN;
-const model = "mistralai/Mixtral-8x7B-Instruct-v0.1"; 
-
+if(!MISTRA_TOKEN){
+  console.log("token: MISTRA_TOKEN not found");
+  
+}
 const generationQuestionAI = (query) => {
     const parameters = {
         method: 'POST',
@@ -21,13 +29,17 @@ const generationQuestionAI = (query) => {
             ]
         })
     }
-    fetch('https://api.mistral.ai/v1/chat/completions', parameters)
-    .then(response => response.json())
-    .then(data => {
-      console.log(data.choices[0].message.content); 
-    })
-    .catch(error => {
-      console.error("Error: ", error);
-    });
+    return new Promise((resolve, reject) => {
+      fetch('https://api.mistral.ai/v1/chat/completions', parameters)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.choices[0].message.content); 
+        resolve(data.choices[0].message.content);
+      })
+      .catch(error => {
+        console.error("Error: ", error);
+        reject(error);
+      });
+    })    
 }
 export default generationQuestionAI;
