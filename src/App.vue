@@ -1,46 +1,105 @@
 <template>
-  <div>
-    <h1>Generador de Preguntas IA</h1>
-    <input v-model="prompt" placeholder="Escribe tu pregunta..." />
-    <button @click="generateQuestion">Generar Pregunta</button>
-    <p v-if="generatedQuestion">Respuesta de la IA: {{ generatedQuestion }}</p>
-    <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <div class="container">
+    <header class="header">
+      <h1>Create Custom Questions for Exams</h1>
+      <p>
+        This tool allows you to create assessment questions in any language
+        with the help of AI.
+      </p>
+    </header>
+    <InputComponent
+      :isLoading="isLoading"
+      @generate="generateQuestion"
+    />
+    <OutputComponent
+      v-if="generatedQuestion"
+      :generatedQuestion="generatedQuestion"
+      @sendToMoodle="handleSendToMoodle"
+      @deleteAnswer="handleDeleteAnswer"
+      @modifyAnswer="handleModifyAnswer"
+    />
   </div>
 </template>
 
 <script>
+import InputComponent from "./components/InputComponent.vue";
+import OutputComponent from "./components/OutputComponent.vue";
+
 export default {
+  components: {
+    InputComponent,
+    OutputComponent,
+  },
   data() {
     return {
-      prompt: "",              // Contenido del campo de entrada
-      generatedQuestion: null,  // Almacena la respuesta generada
-      errorMessage: null,      // Almacena mensajes de error, si hay
+      generatedQuestion: null,
+      isLoading: false,
     };
   },
   methods: {
-    async generateQuestion() {
-      this.errorMessage = null; // Limpiar el mensaje de error
+    async generateQuestion(prompt) {
+      this.isLoading = true;
+      this.generatedQuestion = null;
+
       try {
         const response = await fetch("http://localhost:3000/api/AIGeneration", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt: this.prompt }),
+          body: JSON.stringify({ prompt }),
         });
-        
-        // Manejo de errores de la respuesta
+
         if (!response.ok) {
-          throw new Error("Error en la respuesta del servidor.");
+          throw new Error(`Server error: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        this.generatedQuestion = data.generatedQuestion; // Guarda la respuesta en `generatedQuestion`
+
+        if (!data.generatedQuestion) {
+          throw new Error("The server did not return a valid question.");
+        }
+
+        this.generatedQuestion = data.generatedQuestion;
       } catch (error) {
         console.error("Error fetching question:", error);
-        this.errorMessage = error.message; // Muestra el mensaje de error en la interfaz
+      } finally {
+        this.isLoading = false;
       }
     },
   },
 };
 </script>
+
+<style>
+body {
+  background-color: #A7A7A7;
+  font-family: 'Poppins';
+  margin: 0;
+  padding: 0;
+}
+.header {
+  position: absolute;
+  top: 40px; 
+  left: 60px; 
+  text-align: left;
+  margin: 0; 
+  color: black;
+}
+.header h1 {
+  font-weight: 500;
+  font-size: 40px; 
+  margin: 0;
+}
+.header p {
+  font-weight: 400;
+  font-size: 16px;
+  margin-top: 8px;
+}
+</style>
