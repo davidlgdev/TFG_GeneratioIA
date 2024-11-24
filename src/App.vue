@@ -20,9 +20,7 @@
     <OutputComponent
       v-if="generatedQuestion"
       :generatedQuestion="generatedQuestion"
-      @sendToMoodle="handleSendToMoodle"
-      @deleteAnswer="handleDeleteAnswer"
-      @modifyAnswer="handleModifyAnswer"
+      @optionSelected="handleOption"
     />
   </div>
 </template>
@@ -73,6 +71,23 @@ export default {
         this.isLoading = false;
       }
     },
+    handleOption(option) {
+      if (option === "sendToMoodle") {
+
+      }
+      if (option === "deleteAnswer") {
+        const confirmation = window.confirm("Are you sure you want to delete the answer?");
+        if (confirmation) {
+          this.generatedQuestion = null; 
+          console.log("Answer deleted");
+        } else {
+          console.log("Delete cancelled");
+        }
+      }
+      if (option === "modifyAnswer") {
+
+      }
+    }
   },
 };
 </script>

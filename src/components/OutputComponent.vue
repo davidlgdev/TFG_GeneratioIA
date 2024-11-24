@@ -46,13 +46,19 @@
     props: {
       generatedQuestion: String,
     },
+    data() {
+      return {
+        selectedOption: null,
+      };
+    },
     methods: {
     confirmOption() {
       if (!this.selectedOption) {
         alert("Please select an option before proceeding!");
         return;
       }
-      this.$emit(this.selectedOption, this.generatedQuestion);
+      console.log("Selected option:", this.selectedOption);
+      this.$emit("optionSelected", this.selectedOption);    
     },
   },
   };
