@@ -7,7 +7,7 @@
   </head>
   <div class="container">
     <header class="header">
-      <h1>Create Custom Questions for Exams</h1>
+      <h1>Create Custom Questions for Exams DE MOMENTO SOLO PREGUNTAS EN ESPAÑOL</h1>
       <p>
         This tool allows you to create assessment questions in any language
         with the help of AI.

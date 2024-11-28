@@ -8,8 +8,8 @@
       <button class="GenerateButton" :disabled="isLoading" @click="handleGenerate">
         {{ isLoading ? "Generating..." : "Generate" }}
       </button>
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    </div>
+      <p v-if="errorMessage" :style="{ color: 'red', fontSize: '18px', marginTop: '10px' }"> {{ errorMessage }}
+      </p>    </div>
 </template>
   
 <script>

@@ -1,116 +1,124 @@
 <template>
-    <div class="output">
-      <textarea
-        class="custom-textarea-output"
-        readonly
-        v-if="generatedQuestion"
-        :value="generatedQuestion"
-      ></textarea>
-      <div v-if="generatedQuestion" class="radio-container">
-            <h3>What to do with the generated answer?</h3>
-            <label class="radio-option">
-                <input
-                type="radio"
-                name="responseOption"
-                value="sendToMoodle"
-                v-model="selectedOption"
-                />
-                Send to Moodle
-            </label>
-            <label class="radio-option">
-                <input
-                type="radio"
-                name="responseOption"
-                value="deleteAnswer"
-                v-model="selectedOption"
-                />
-                Delete Answer
-            </label>
-            <label class="radio-option">
-                <input
-                type="radio"
-                name="responseOption"
-                value="modifyAnswer"
-                v-model="selectedOption"
-                />
-                Modify Answer
-            </label>
-            <button class="confirm-button" @click="confirmOption">
-                Confirm
-            </button>
+  <div class="output">
+    <div v-if="generatedQuestions.length > 0">
+      <div
+        v-for="(question, index) in generatedQuestions"
+        :key="index"
+        class="textarea-container"
+      >
+        <textarea
+          class="custom-textarea-output"
+          readonly
+          :value="question"
+          @click="selectTextarea(index)"
+        ></textarea>
+        <div v-if="selectedTextarea === index" class="options-container">
+          <button class="confirm-button" @click="handleOption('deleteAnswer', index)">
+            Delete Answer
+          </button>
+          <button class="confirm-button" @click="handleOption('modifyAnswer', index)">
+            Modify Answer
+          </button>
         </div>
+      </div>
+      <div class="send-container">
+        <button class="confirm-button" @click="sendAllToMoodle">
+          Send to Moodle
+        </button>
+      </div>
     </div>
+  </div>
 </template>
+
 <script>
-  export default {
-    props: {
-      generatedQuestion: String,
-    },
-    data() {
-      return {
-        selectedOption: null,
-      };
-    },
-    methods: {
-    confirmOption() {
-      if (!this.selectedOption) {
-        alert("Please select an option before proceeding!");
-        return;
+export default {
+  props: {
+    generatedQuestion: String,
+  },
+  data() {
+    return {
+      selectedTextarea: null,
+    };
+  },
+  computed: {
+    generatedQuestions() {
+      const regex = /\d+\.\s+/g;
+      let cleanedText = this.generatedQuestion.trim();
+      const parts = cleanedText.split(/1\./);
+      if (parts.length > 1) {
+        cleanedText = "1." + parts[1];
       }
-      console.log("Selected option:", this.selectedOption);
-      this.$emit("optionSelected", this.selectedOption);    
+
+      const questions = cleanedText.split(regex).filter(Boolean);
+      return questions;
     },
   },
-  };
+  methods: {
+    selectTextarea(index) {
+      this.selectedTextarea = index;
+    },
+    handleOption(option, index) {
+      if (option === "deleteAnswer") {
+        this.generatedQuestions.splice(index, 1); // Borra la respuesta
+      } else if (option === "modifyAnswer") {
+        alert(`Modify Answer clicked for question: ${this.generatedQuestions[index]}`);
+      }
+      this.selectedTextarea = null; 
+    },
+    sendAllToMoodle() {
+      alert("All questions sent to Moodle!");
+    },
+  },
+};
 </script>
+
 <style>
+.output {
+  position: absolute;
+  top: 250px;
+  left: 1143px;
+}
+
 .custom-textarea-output {
-    position: absolute;
-    top: 250px;
-    left: 1143px;
-    width: 600px;
-    height: 300px;
-    border-radius: 10px;
-    padding: 8px;
-    font-size: 16px;
-    background-color: #fdfdfd;
-    resize: none;
-    overflow-y: auto;
-    white-space: pre-wrap;
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 16px;
+  background-color: #fdfdfd;
+  resize: none;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
-.radio-container {
-    position: absolute;
-    top: 560px;
-    left: 1143px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+
+.textarea-container {
+  margin-bottom: 15px;
 }
-.radio-container h3 {
-    font-size: 20px; 
-    color: black;
+
+.options-container {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
 }
-.radio-option {
-    font-size: 16px; 
-    color: black;
-    display: flex;
-    align-items: center;
-}
-.radio-option input {
-    width: 20px; 
-    height: 20px; 
-    margin-right: 15px; 
-}
+
 .confirm-button {
-    left: 100px;
-    width: 600px;
-    background-color: #2C2C2C;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    padding: 10px 15px;
-    text-align: center;
+  background-color: #2c2c2c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.confirm-button:hover {
+  background-color: #4b4b4b;
+}
+
+.send-container {
+  margin-top: 20px;
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
 }
 </style>
-  
