@@ -1,16 +1,17 @@
 <template>
   <div class="output">
-    <div v-if="generatedQuestions.length > 0">
+    <div v-if="generatedQuestionsArray.length > 0">
       <div
-        v-for="(question, index) in generatedQuestions"
+        v-for="(question, index) in generatedQuestionsArray"
         :key="index"
         class="textarea-container"
       >
         <textarea
           class="custom-textarea-output"
-          readonly
+          :readonly="selectedTextarea !== index || !isEditing"
           :value="question"
           @click="selectTextarea(index)"
+          v-model="generatedQuestionsArray[index]"
         ></textarea>
         <div v-if="selectedTextarea === index" class="options-container">
           <button class="confirm-button" @click="handleOption('deleteAnswer', index)">
@@ -18,6 +19,13 @@
           </button>
           <button class="confirm-button" @click="handleOption('modifyAnswer', index)">
             Modify Answer
+          </button>
+          <button
+            v-if="isEditing && selectedTextarea === index"
+            class="confirm-button"
+            @click="saveQuestion(index)"
+          >
+            Save
           </button>
         </div>
       </div>
@@ -34,40 +42,111 @@
 export default {
   props: {
     generatedQuestion: String,
+    selectedQuestionTypeName: String
   },
   data() {
     return {
+      generatedQuestionsArray: [],
       selectedTextarea: null,
+      isEditing: false,
     };
   },
-  computed: {
-    generatedQuestions() {
-      const regex = /\d+\.\s+/g;
-      let cleanedText = this.generatedQuestion.trim();
-      const parts = cleanedText.split(/1\./);
-      if (parts.length > 1) {
-        cleanedText = "1." + parts[1];
-      }
-
-      const questions = cleanedText.split(regex).filter(Boolean);
-      return questions;
-    },
+  mounted() {
+    this.changeGeneratedQuestions();
+  },
+  watch: {
+    generatedQuestion: "changeGeneratedQuestions",
   },
   methods: {
+    
     selectTextarea(index) {
       this.selectedTextarea = index;
     },
     handleOption(option, index) {
       if (option === "deleteAnswer") {
-        this.generatedQuestions.splice(index, 1); // Borra la respuesta
+        this.generatedQuestionsArray.splice(index, 1); 
       } else if (option === "modifyAnswer") {
-        alert(`Modify Answer clicked for question: ${this.generatedQuestions[index]}`);
+        alert(`Modify option clicked for question: ${this.generatedQuestionsArray[index]}`); 
+        this.isEditing = true;
       }
-      this.selectedTextarea = null; 
+    },
+    updateQuestion(value, index) {
+      this.generatedQuestionsArray[index] = value; 
+    },
+    saveQuestion(index) {
+      this.isEditing = false;
+      this.selectedTextarea = null;
+      alert(`Question ${index + 1} updated successfully!`);
     },
     sendAllToMoodle() {
       alert("All questions sent to Moodle!");
+      console.log("Modified Questions:", this.generatedQuestionsArray); 
     },
+    changeGeneratedQuestions() {
+      if (!this.generatedQuestion) {
+        return;
+      }
+      switch (this.selectedQuestionTypeName) {
+        case "multipleChoice":
+          console.log("Multiple Choice question");
+          this.generatedQuestionsArray = this.parseQuestionMultipleChoice(this.generatedQuestion);
+          break;
+        case "openAnswer":
+          console.log("Open Answer question");
+          this.generatedQuestionsArray = this.parseQuestionsOpenAnswer(this.generatedQuestion);
+          break;
+        case "trueOrFalse":
+          console.log("True or False question");
+          this.generatedQuestionsArray = this.parseQuestionTrueOrFalse(this.generatedQuestion);
+          break;
+        default:
+          console.log("Unknown question type");
+          
+      }
+    },
+    parseQuestionMultipleChoice(rawText) {
+      const questionRegex = /(\d+\.\s+)"(.*?)"\s*\{(.*?)\}/g;
+      const answerRegex = /([=~])\s*([^~}]+)/g; 
+      let filteredQuestion;
+      const questions = [];
+      while ((filteredQuestion = questionRegex.exec(rawText)) !== null) { 
+        const questionText = filteredQuestion[2].trim(); // Pregunta
+        const rawAnswers = filteredQuestion[3]; // Respuestas
+
+        const answers = [];
+        let correctAnswer = null;
+        let filteredAnswer;
+
+        while ((filteredAnswer = answerRegex.exec(rawAnswers)) !== null) {
+          const isCorrect = filteredAnswer[1] === "="; // correcta?
+          const answerText = filteredAnswer[2].trim();
+          answers.push(answerText);
+          if (isCorrect) {
+            correctAnswer = answerText; // Guardar respuesta correcta
+          }
+        }
+        questions.push(`-Pregunta: ${questionText}\n-Respuestas: ${answers.join(", ")}\n-Respuesta correcta: ${correctAnswer}`);
+      }
+      return questions;
+    },
+    parseQuestionsOpenAnswer(rawText) {
+      const regex = /'([^']+)'\{=\s*([^}]+)\}/g;
+      let filteredText;
+      const questions = [];
+      while ((filteredText = regex.exec(rawText)) !== null) {
+        questions.push(`Pregunta: ${filteredText[1]}\nRespuesta Correcta: ${filteredText[2]}`);
+      }
+      return questions;
+    },
+    parseQuestionTrueOrFalse(rawText) {
+      const regex = /::(True|False)Statement sobre ([^:]+)::'([^']+)'{(True|False)}/g;
+      let filteredText;
+      const questions = [];
+      while ((filteredText = regex.exec(rawText)) !== null) {
+        questions.push(`Tipo: ${filteredText[1]}\nTema: ${filteredText[2]}\nTexto: ${filteredText[3]}\nCorrecta: ${filteredText[4]}`);
+      }
+      return questions; 
+    }
   },
 };
 </script>
@@ -80,7 +159,7 @@ export default {
 }
 
 .custom-textarea-output {
-  width: 100%;
+  width: 200%;
   height: 200px;
   border-radius: 10px;
   padding: 8px;

@@ -9,18 +9,23 @@
     <header class="header">
       <h1>Create Custom Questions for Exams DE MOMENTO SOLO PREGUNTAS EN ESPAÑOL</h1>
       <p>
-        This tool allows you to create assessment questions in any language
-        with the help of AI.
+        Select the type of question you want to make:   
       </p>
+      <div class="button-header">
+        <button @click="selectQuestionType(multipleChoiceText)" >Multiple Choice</button>
+        <button @click="selectQuestionType(openAnswerText)">Open answer</button>
+        <button @click="selectQuestionType(trueOrFalseText)">True/False</button>
+      </div>
     </header>
     <InputComponent
       :isLoading="isLoading"
-      @generate="generateQuestion"
+      :selectedQuestionType="selectedQuestionType"
+      @generate="modifyPrompt"
     />
     <OutputComponent
       v-if="generatedQuestion"
       :generatedQuestion="generatedQuestion"
-      @optionSelected="handleOption"
+      :selectedQuestionTypeName="selectedQuestionTypeName"
     />
   </div>
 </template>
@@ -38,13 +43,31 @@ export default {
     return {
       generatedQuestion: null,
       isLoading: false,
+      selectedQuestionTypeName: "",
+      selectedQuestionType: "",
+      multipleChoiceText: " en el siguiente formato GIFT: Question{= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }",
+      openAnswerText: " en el siguiente formato GIFT: 'Question'{= Respuesta correcta}",
+      trueOrFalseText: " en el siguiente formato GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}"
     };
   },
   methods: {
-    async generateQuestion(prompt) {
+    selectQuestionType(typeSelected) {
+      if (this.selectedQuestionType == "  ") {
+        console.error("No question type selected!");
+        return;
+      }
+      this.selectedQuestionType = typeSelected;
+      console.log(this.selectedQuestionType);
+    },
+    modifyPrompt(prompt, selectedQuestionTypeName){
+      const modifyPrompt = prompt + this.selectedQuestionType
+      this.selectedQuestionTypeName = selectedQuestionTypeName
+      this.generateQuestionAI(modifyPrompt);
+    },
+    async generateQuestionAI(prompt) {
       this.isLoading = true;
       this.generatedQuestion = null;
-
+      console.log(prompt);
       try {
         const response = await fetch("http://localhost:3000/api/AIGeneration", {
           method: "POST",
@@ -75,19 +98,8 @@ export default {
       if (option === "sendToMoodle") {
 
       }
-      if (option === "deleteAnswer") {
-        const confirmation = window.confirm("Are you sure you want to delete the answer?");
-        if (confirmation) {
-          this.generatedQuestion = null; 
-          console.log("Answer deleted");
-        } else {
-          console.log("Delete cancelled");
-        }
-      }
-      if (option === "modifyAnswer") {
-
-      }
     }
+
   },
 };
 </script>
@@ -116,5 +128,20 @@ body {
   font-weight: 400;
   font-size: 16px;
   margin-top: 8px;
+}
+.button-header {
+  margin-top: 15px;
+}
+.button-header button {
+  margin-right: 10px;
+  padding: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #4cc750; 
+}
+.button-header button:hover {
+  background-color: #3db143;
 }
 </style>
