@@ -38,15 +38,15 @@
     computed: {
       swapPlaceholder() {
         switch (this.selectedQuestionType) {
-          case " en el siguiente formato GIFT: Question{= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }":
+          case " en el siguiente formato especificado GIFT: 'Question' {= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }":
             this.selectedQuestionTypeName = "multipleChoice"
             return "Enter the instructions or topic for a multiple-choice question. Example: 'Create X multiple-choice question/s about photosynthesis.'";
           //multiple choice
-          case " en el siguiente formato GIFT: 'Question'{= Respuesta correcta}":
+          case " en el siguiente formato especificado: 'Question'{= Respuesta correcta}":
           this.selectedQuestionTypeName = "openAnswer"
             return "Enter the instructions or topic for an open-answer question. Example: 'Create X open-answer question/s about the French Revolution.'";
           //open answer
-          case " en el siguiente formato GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}":
+          case " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}":
             this.selectedQuestionTypeName = "trueOrFalse"
             return "Enter the instructions or topic for a true/false question. Example: 'Create X true/false question/s about global warming.'";
           //true or false

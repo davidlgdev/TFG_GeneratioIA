@@ -26,6 +26,7 @@
       v-if="generatedQuestion"
       :generatedQuestion="generatedQuestion"
       :selectedQuestionTypeName="selectedQuestionTypeName"
+      @sendToMoodle="savePromptResults"
     />
   </div>
 </template>
@@ -45,9 +46,9 @@ export default {
       isLoading: false,
       selectedQuestionTypeName: "",
       selectedQuestionType: "",
-      multipleChoiceText: " en el siguiente formato GIFT: Question{= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }",
-      openAnswerText: " en el siguiente formato GIFT: 'Question'{= Respuesta correcta}",
-      trueOrFalseText: " en el siguiente formato GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}"
+      multipleChoiceText: " en el siguiente formato especificado GIFT: 'Question' {= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }",
+      openAnswerText: " en el siguiente formato especificado: 'Question'{= Respuesta correcta}",
+      trueOrFalseText: " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}",
     };
   },
   methods: {
@@ -94,12 +95,9 @@ export default {
         this.isLoading = false;
       }
     },
-    handleOption(option) {
-      if (option === "sendToMoodle") {
-
-      }
+    savePromptResults(questionArray) {
+      const regularArray = Array.from(questionArray);
     }
-
   },
 };
 </script>

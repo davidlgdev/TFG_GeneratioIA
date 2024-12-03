@@ -49,6 +49,7 @@ export default {
       generatedQuestionsArray: [],
       selectedTextarea: null,
       isEditing: false,
+      jsonQuestions: []
     };
   },
   mounted() {
@@ -80,7 +81,7 @@ export default {
     },
     sendAllToMoodle() {
       alert("All questions sent to Moodle!");
-      console.log("Modified Questions:", this.generatedQuestionsArray); 
+      this.$emit("sendToMoodle", this.jsonQuestions)
     },
     changeGeneratedQuestions() {
       if (!this.generatedQuestion) {
@@ -89,15 +90,15 @@ export default {
       switch (this.selectedQuestionTypeName) {
         case "multipleChoice":
           console.log("Multiple Choice question");
-          this.generatedQuestionsArray = this.parseQuestionMultipleChoice(this.generatedQuestion);
+          [this.generatedQuestionsArray, this.jsonQuestions] = this.parseQuestionMultipleChoice(this.generatedQuestion);
           break;
         case "openAnswer":
           console.log("Open Answer question");
-          this.generatedQuestionsArray = this.parseQuestionsOpenAnswer(this.generatedQuestion);
+          [this.generatedQuestionsArray, this.jsonQuestions] = this.parseQuestionsOpenAnswer(this.generatedQuestion);
           break;
         case "trueOrFalse":
           console.log("True or False question");
-          this.generatedQuestionsArray = this.parseQuestionTrueOrFalse(this.generatedQuestion);
+          [this.generatedQuestionsArray, this.jsonQuestions] = this.parseQuestionTrueOrFalse(this.generatedQuestion);
           break;
         default:
           console.log("Unknown question type");
@@ -105,10 +106,11 @@ export default {
       }
     },
     parseQuestionMultipleChoice(rawText) {
-      const questionRegex = /(\d+\.\s+)"(.*?)"\s*\{(.*?)\}/g;
+      const questionRegex = /(\d+\.\s+)["'](.+?)["']\s*\{(.*?)\}/g;      
       const answerRegex = /([=~])\s*([^~}]+)/g; 
       let filteredQuestion;
       const questions = [];
+      const jsonQuestions = [];
       while ((filteredQuestion = questionRegex.exec(rawText)) !== null) { 
         const questionText = filteredQuestion[2].trim(); // Pregunta
         const rawAnswers = filteredQuestion[3]; // Respuestas
@@ -126,26 +128,45 @@ export default {
           }
         }
         questions.push(`-Pregunta: ${questionText}\n-Respuestas: ${answers.join(", ")}\n-Respuesta correcta: ${correctAnswer}`);
+        jsonQuestions.push({
+          question: questionText,
+          answers: answers.join(", "),
+          correctAnswer: correctAnswer
+        });
       }
-      return questions;
+      return [questions, jsonQuestions];
     },
     parseQuestionsOpenAnswer(rawText) {
-      const regex = /'([^']+)'\{=\s*([^}]+)\}/g;
+      const regex = /['"](.*?)['"]\{=\s*([^}]+)\}/g;
       let filteredText;
       const questions = [];
+      const jsonQuestions = [];
       while ((filteredText = regex.exec(rawText)) !== null) {
         questions.push(`Pregunta: ${filteredText[1]}\nRespuesta Correcta: ${filteredText[2]}`);
       }
-      return questions;
+      jsonQuestions.push({
+        question: filteredText[1],
+        answer: filteredText[2]
+      });
+
+      return [questions, jsonQuestions];
     },
     parseQuestionTrueOrFalse(rawText) {
       const regex = /::(True|False)Statement sobre ([^:]+)::'([^']+)'{(True|False)}/g;
       let filteredText;
       const questions = [];
+      const jsonQuestions = [];
       while ((filteredText = regex.exec(rawText)) !== null) {
         questions.push(`Tipo: ${filteredText[1]}\nTema: ${filteredText[2]}\nTexto: ${filteredText[3]}\nCorrecta: ${filteredText[4]}`);
       }
-      return questions; 
+      jsonQuestions.push({
+        type: filteredText[1],
+        topic: filteredText[2],
+        text: filteredText[3],
+        correct: filteredText[4]
+      });
+
+      return [questions, jsonQuestions];
     }
   },
 };
