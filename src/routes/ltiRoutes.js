@@ -44,16 +44,13 @@ router.post('/login', async (req, res) => {
 
         const { header } = jwt.decode(id_token, { complete: true });
 
-        // Encontrar la clave pública correcta
         const publicKey = data.keys.find(key => key.kid === header.kid);
         if (!publicKey) {
             throw new Error('Clave pública no encontrada.');
         }
 
-        // Convertir la clave pública en formato PEM
         const pem = jwkToPem(publicKey);
 
-        // Verificar el JWT
         const decoded = jwt.verify(id_token, pem, {
             algorithms: ['RS256'],
             audience: 'SRiEZ3Drnhs2j7Y',
