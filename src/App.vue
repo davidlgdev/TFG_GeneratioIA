@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      user: null,
       generatedQuestion: null,
       isLoading: false,
       selectedQuestionTypeName: "",
@@ -50,6 +51,13 @@ export default {
       openAnswerText: " en el siguiente formato especificado: 'Question'{= Respuesta correcta}",
       trueOrFalseText: " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}",
     };
+  },
+  mounted(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get('id'); 
+    this.user = Number(user);
+    this.fetchMoodleCourses();
+
   },
   methods: {
     selectQuestionType(typeSelected) {
@@ -70,7 +78,7 @@ export default {
       this.generatedQuestion = null;
       console.log(prompt);
       try {
-        const response = await fetch("http://localhost:3000/api/AIGeneration", {
+        const response = await fetch("http://localhost:3001/api/AIGeneration", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -97,6 +105,7 @@ export default {
     },
     savePromptResults(questionArray) {
       const regularArray = Array.from(questionArray);
+      console.log(regularArray);
     }
   },
 };

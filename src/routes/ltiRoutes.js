@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import querystring from 'querystring';
 import axios from 'axios';
 import jwkToPem from 'jwk-to-pem';
+import { decode } from 'punycode';
 dotenv.config();
 
 const router = express.Router();
@@ -56,9 +57,12 @@ router.post('/login', async (req, res) => {
             audience: 'SRiEZ3Drnhs2j7Y',
             issuer: 'http://localhost/moodle',
         });
-
+        const user = {
+            id: decode.sub
+        }
         console.log('Token válido:', decoded);
-        res.send('Lanzamiento exitoso.');
+        const redirectUrl = 'http://localhost:5173?' + querystring.stringify(user);
+        res.redirect(redirectUrl); 
     } catch (err) {
         console.error('Error al validar el token:', err.message);
         res.status(400).send('Token inválido.');

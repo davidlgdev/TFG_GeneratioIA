@@ -6,7 +6,7 @@ import pool from './db.js';
 import AIRoutes from './routes/AIRoutes.js';
 import ltiRoutes from './routes/ltiRoutes.js';
 import databaseRoutes from './routes/databaseRoutes.js';
-
+import webserverMoodle from './routes/webserverMoodle.js';
 
 dotenv.config();
 const app = express();
@@ -20,6 +20,7 @@ app.use(express.json());
 app.use('/api/AIGeneration', AIRoutes);
 app.use('/api/saveToDatabase', databaseRoutes);
 app.use('/lti', ltiRoutes);
+app.use('/api/webserverMoodle', webserverMoodle);
 
 const startServer = async () => {
   try {

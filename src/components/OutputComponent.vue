@@ -143,12 +143,11 @@ export default {
       const jsonQuestions = [];
       while ((filteredText = regex.exec(rawText)) !== null) {
         questions.push(`Pregunta: ${filteredText[1]}\nRespuesta Correcta: ${filteredText[2]}`);
-      }
-      jsonQuestions.push({
+        jsonQuestions.push({
         question: filteredText[1],
         answer: filteredText[2]
       });
-
+      }
       return [questions, jsonQuestions];
     },
     parseQuestionTrueOrFalse(rawText) {
@@ -158,14 +157,13 @@ export default {
       const jsonQuestions = [];
       while ((filteredText = regex.exec(rawText)) !== null) {
         questions.push(`Tipo: ${filteredText[1]}\nTema: ${filteredText[2]}\nTexto: ${filteredText[3]}\nCorrecta: ${filteredText[4]}`);
-      }
-      jsonQuestions.push({
+        jsonQuestions.push({
         type: filteredText[1],
         topic: filteredText[2],
         text: filteredText[3],
         correct: filteredText[4]
       });
-
+      }
       return [questions, jsonQuestions];
     }
   },
