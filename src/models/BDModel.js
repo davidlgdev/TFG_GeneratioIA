@@ -5,4 +5,16 @@ const saveQuestionsToDB = (questions) => {
     const query = '';
 
 }
-export default saveQuestionsToDB;
+const fetchMoodleCourses = async () => {
+    try {
+        const conn = await pool.getConnection(); 
+        const result = await conn.query('SELECT fullname FROM mdl_course');
+        conn.release()
+        return result;
+    } catch (error) {
+        console.error("Error fetching courses from the database:", error);
+        throw error; 
+    }
+};
+
+export default { saveQuestionsToDB, fetchMoodleCourses };
