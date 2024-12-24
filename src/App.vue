@@ -7,12 +7,12 @@
   </head>
   <div class="container">
     <header class="header">
-      <h1>Create Custom Questions for Exams DE MOMENTO SOLO PREGUNTAS EN ESPAÑOL</h1>
+      <h1>Crea preguntas personalizadas para examenes</h1>
       <p>
-        Select the type of question you want to make:   
+        Selecciona el tipo de pregunta que quieres hacer:   
       </p>
       <div class="button-header">
-        <button @click="selectQuestionType(multipleChoiceText)" >Multiple Choice</button>
+        <button @click="selectQuestionType(multipleChoiceText)">Multiple Choice</button>
         <button @click="selectQuestionType(openAnswerText)">Open answer</button>
         <button @click="selectQuestionType(trueOrFalseText)">True/False</button>
       </div>
@@ -56,7 +56,6 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     const user = urlParams.get('id'); 
     this.user = Number(user);
-    this.fetchMoodleCourses();
 
   },
   methods: {
@@ -66,7 +65,6 @@ export default {
         return;
       }
       this.selectedQuestionType = typeSelected;
-      console.log(this.selectedQuestionType);
     },
     modifyPrompt(prompt, selectedQuestionTypeName){
       const modifyPrompt = prompt + this.selectedQuestionType
@@ -106,6 +104,16 @@ export default {
     savePromptResults(questionArray) {
       const regularArray = Array.from(questionArray);
       console.log(regularArray);
+      fetch("http://localhost:3001/api/webserverMoodle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questions: regularArray }),
+      })
+      .catch((error) => {
+        console.error("Error al enviar los datos al servidor:", error);
+      });
     }
   },
 };

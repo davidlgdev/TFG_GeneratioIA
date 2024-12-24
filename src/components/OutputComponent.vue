@@ -129,6 +129,7 @@ export default {
         }
         questions.push(`-Pregunta: ${questionText}\n-Respuestas: ${answers.join(", ")}\n-Respuesta correcta: ${correctAnswer}`);
         jsonQuestions.push({
+          type: "multipleChoice",
           question: questionText,
           answers: answers.join(", "),
           correctAnswer: correctAnswer
@@ -137,6 +138,7 @@ export default {
       return [questions, jsonQuestions];
     },
     parseQuestionsOpenAnswer(rawText) {
+      
       const regex = /['"](.*?)['"]\{=\s*([^}]+)\}/g;
       let filteredText;
       const questions = [];
@@ -144,6 +146,7 @@ export default {
       while ((filteredText = regex.exec(rawText)) !== null) {
         questions.push(`Pregunta: ${filteredText[1]}\nRespuesta Correcta: ${filteredText[2]}`);
         jsonQuestions.push({
+        type: "openAnswer",
         question: filteredText[1],
         answer: filteredText[2]
       });

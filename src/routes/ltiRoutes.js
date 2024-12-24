@@ -11,8 +11,9 @@ dotenv.config();
 const router = express.Router();
 //URL TEMPORAL DEL NGROK, LAS DEL MOODLE SON IGUAL 
 //Configuracion URL del Moodle: https://drive.google.com/file/d/1MmKNij-B93nGPIUd7Ci_AqVAviPUVtJG/view
+//CADA VEZ QUE SE CAMBIA LA URL, REINICIAR EL BACKEND !!!!!!NO OLVIDARSE!!!!!
 router.post('/launch', async (req, res) => {
-    const target_link_uri = 'https://42c3-81-184-197-163.ngrok-free.app/lti/login'; 
+    const target_link_uri = 'https://3350-81-184-197-163.ngrok-free.app/lti/login'; 
     const login_hint = req.body.login_hint
     const lti_message_hint = req.body.lti_message_hint
     const client_id = req.body.client_id
