@@ -11,7 +11,7 @@ const createQuestion = async (req, res) => {
         }
 
         const baseURL = "http://localhost/moodle/webservice/rest/server.php";
-        const token = "9ae3605244f2b0c2eceae7d0180fe4f3";
+        const token = process.env.MOODLE_TOKEN_RETQUESTION;
         const functionName = "local_qbank_plugin_add_question";
         const format = "json";
         const moodleResponses = [];
