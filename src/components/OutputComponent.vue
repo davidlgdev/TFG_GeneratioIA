@@ -15,23 +15,23 @@
         ></textarea>
         <div v-if="selectedTextarea === index" class="options-container">
           <button class="confirm-button" @click="handleOption('deleteAnswer', index)">
-            Delete Answer
+            {{ $t('deleteAnswerButton') }}
           </button>
           <button class="confirm-button" @click="handleOption('modifyAnswer', index)">
-            Modify Answer
+            {{ $t('modifyAnswerButton') }}
           </button>
           <button
             v-if="isEditing && selectedTextarea === index"
             class="confirm-button"
             @click="saveQuestion(index)"
           >
-            Save
+          {{ $t('SaveButton') }}
           </button>
         </div>
       </div>
       <div class="send-container">
         <button class="confirm-button" @click="sendAllToMoodle">
-          Send to Moodle
+          {{ $t('sendToMoodleButton') }}
         </button>
       </div>
     </div>
@@ -39,10 +39,16 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   props: {
     generatedQuestion: String,
     selectedQuestionTypeName: String
+  },
+  setup() {
+    const t = useI18n();
+    return t;
   },
   data() {
     return {
@@ -67,7 +73,7 @@ export default {
       if (option === "deleteAnswer") {
         this.generatedQuestionsArray.splice(index, 1); 
       } else if (option === "modifyAnswer") {
-        alert(`Modify option clicked for question: ${this.generatedQuestionsArray[index]}`); 
+        alert(this.t('modifyOptionAlert', { question: this.generatedQuestionsArray[index] })); 
         this.isEditing = true;
       }
     },
@@ -77,10 +83,10 @@ export default {
     saveQuestion(index) {
       this.isEditing = false;
       this.selectedTextarea = null;
-      alert(`Question ${index + 1} updated successfully!`);
+      alert(this.t('questionUpdatedAlert', { index: index + 1 })); 
     },
     sendAllToMoodle() {
-      alert("All questions sent to Moodle!");
+      alert(this.t('allQuestionsSentAlert')); 
       this.$emit("sendToMoodle", this.jsonQuestions)
     },
     changeGeneratedQuestions() {

@@ -7,14 +7,35 @@
   </head>
   <div class="container">
     <header class="header">
-      <h1>Crea preguntas personalizadas para examenes</h1>
+      <h1>{{ $t('Title') }}</h1>
       <p>
-        Selecciona el tipo de pregunta que quieres hacer:   
+        {{ $t('chooseQuestionTypeButton') }}   
       </p>
+      <div class="language-selector">
+        <h3>{{ $t('chooseLanguageButton') }}</h3>
+        <img 
+          src="/es_flag.png" 
+          alt="Español" 
+          class="flag" 
+          @click="changeLanguage('es')"
+        />
+        <img 
+          src="/en_flag.png" 
+          alt="Inglés" 
+          class="flag" 
+          @click="changeLanguage('en')"
+        />
+        <img 
+          src="/ca_flag.png" 
+          alt="Catalán" 
+          class="flag" 
+          @click="changeLanguage('ca')"
+        />
+      </div>
       <div class="button-header">
-        <button @click="selectQuestionType(multipleChoiceText)">Multiple Choice</button>
-        <button @click="selectQuestionType(openAnswerText)">Open answer</button>
-        <button @click="selectQuestionType(trueOrFalseText)">True/False</button>
+        <button @click="selectQuestionType(multipleChoiceText)">{{ $t('multipleChoiceButton') }}</button>
+        <button @click="selectQuestionType(openAnswerText)">{{ $t('openAnswerButton') }}</button>
+        <button @click="selectQuestionType(trueOrFalseText)">{{ $t('trueOrFalseButton') }}</button>
       </div>
     </header>
     <InputComponent
@@ -59,6 +80,10 @@ export default {
 
   },
   methods: {
+    changeLanguage(lang) {
+      this.$i18n.locale = lang;
+      localStorage.setItem("language", lang); 
+    },
     selectQuestionType(typeSelected) {
       if (this.selectedQuestionType == "  ") {
         console.error("No question type selected!");
@@ -159,4 +184,27 @@ body {
 .button-header button:hover {
   background-color: #3db143;
 }
+.language-selector {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.language-selector h3 {
+  margin-right: 10px;
+}
+
+.flag {
+  width: 30px;
+  height: 20px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.flag:hover {
+  border-color: #000;
+}
+
 </style>

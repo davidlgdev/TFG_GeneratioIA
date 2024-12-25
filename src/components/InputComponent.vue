@@ -6,17 +6,23 @@
         :placeholder="swapPlaceholder"
         ></textarea>
       <button class="GenerateButton" :disabled="isLoading" @click="handleGenerate">
-        {{ isLoading ? "Generating..." : "Generate" }}
+        {{ isLoading ? $t('GeneratingButton') : $t('GenerateButton') }}
       </button> 
       <p v-if="errorMessage" :style="{ color: 'red', fontSize: '18px', marginTop: '10px' }"> {{ errorMessage }}
       </p>    </div>
 </template>
   
 <script>
+  import { useI18n } from 'vue-i18n'; 
+
   export default {
     props: {
       selectedQuestionType: String,
       isLoading: Boolean,
+    },
+    setup() {
+      const t  = useI18n();
+      return t;
     },
     data() {
       return {
@@ -40,18 +46,19 @@
         switch (this.selectedQuestionType) {
           case " en el siguiente formato especificado GIFT: 'Question' {= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }":
             this.selectedQuestionTypeName = "multipleChoice"
-            return "Enter the instructions or topic for a multiple-choice question. Example: 'Create X multiple-choice question/s about photosynthesis.'";
+            return this.$t('placeholderMultiplechoice');
           //multiple choice
           case " en el siguiente formato especificado: 'Question'{= Respuesta correcta}":
           this.selectedQuestionTypeName = "openAnswer"
-            return "Enter the instructions or topic for an open-answer question. Example: 'Create X open-answer question/s about the French Revolution.'";
+          return this.$t('placeholderOpenasnwer');
           //open answer
           case " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}":
             this.selectedQuestionTypeName = "trueOrFalse"
-            return "Enter the instructions or topic for a true/false question. Example: 'Create X true/false question/s about global warming.'";
+            return this.$t('placeholderTrueorFalse');
           //true or false
           default:
-            return "Select a question type";
+            this.selectedQuestionTypeName = null;
+            return this.$t('placeholderDefault');
         }
       }
     }
@@ -61,7 +68,7 @@
 <style>
 .custom-textarea-input {
   position: absolute;
-  top: 250px;
+  top: 325px;
   left: 100px;
   width: 600px;
   height: 200px;
@@ -74,9 +81,9 @@
 }
 .GenerateButton {
     position: absolute;
-    top: 475px;
+    top: 560px;
     left: 100px;
-    width: 600px;
+    width: 617px;
     background-color: #2C2C2C;
     color: white;
     border-radius: 5px;
