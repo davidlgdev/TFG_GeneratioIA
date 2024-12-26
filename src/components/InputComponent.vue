@@ -44,15 +44,15 @@
     computed: {
       swapPlaceholder() {
         switch (this.selectedQuestionType) {
-          case " en el siguiente formato especificado GIFT: 'Question' {= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }":
+          case this.$t('caseMultipleChoice'):
             this.selectedQuestionTypeName = "multipleChoice"
             return this.$t('placeholderMultiplechoice');
           //multiple choice
-          case " en el siguiente formato especificado: 'Question'{= Respuesta correcta}":
+          case this.$t('caseOpenAnswer'):
           this.selectedQuestionTypeName = "openAnswer"
           return this.$t('placeholderOpenasnwer');
           //open answer
-          case " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}":
+          case this.$t('caseTrueOrFalse'):
             this.selectedQuestionTypeName = "trueOrFalse"
             return this.$t('placeholderTrueorFalse');
           //true or false

@@ -112,12 +112,18 @@ export default {
       }
     },
     parseQuestionMultipleChoice(rawText) {
-      const questionRegex = /(\d+\.\s+)["'](.+?)["']\s*\{(.*?)\}/g;      
-      const answerRegex = /([=~])\s*([^~}]+)/g; 
+      const regex1 = /(\d+\.\s+)["'](.+?)["']\s*\[(.*?)\]/g; 
+      const answerRegex1 = /([=~])\s*([^~\]]+)/g;
+
+      const regex2 = /(.+?) \[(.+?)\]/g; // Captura la pregunta y las respuestas
+      const answerRegex2 = /(=|\~)(.+?)(?=(=|\~)|$)/g; // Captura cada respuesta individual
+
+
       let filteredQuestion;
       const questions = [];
       const jsonQuestions = [];
-      while ((filteredQuestion = questionRegex.exec(rawText)) !== null) { 
+
+      while ((filteredQuestion = regex1.exec(rawText)) !== null) {
         const questionText = filteredQuestion[2].trim(); // Pregunta
         const rawAnswers = filteredQuestion[3]; // Respuestas
 
@@ -125,42 +131,95 @@ export default {
         let correctAnswer = null;
         let filteredAnswer;
 
-        while ((filteredAnswer = answerRegex.exec(rawAnswers)) !== null) {
-          const isCorrect = filteredAnswer[1] === "="; // correcta?
+        while ((filteredAnswer = answerRegex1.exec(rawAnswers)) !== null) {
+          const isCorrect = filteredAnswer[1] === "="; // Correcta?
           const answerText = filteredAnswer[2].trim();
           answers.push(answerText);
           if (isCorrect) {
             correctAnswer = answerText; // Guardar respuesta correcta
           }
         }
-        questions.push(`-Pregunta: ${questionText}\n-Respuestas: ${answers.join(", ")}\n-Respuesta correcta: ${correctAnswer}`);
+
+        questions.push(`-${this.t('Question')}: ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
         jsonQuestions.push({
           type: "multipleChoice",
           question: questionText,
           answers: answers.join(", "),
-          correctAnswer: correctAnswer
+          correctAnswer: correctAnswer,
         });
       }
+
+      if (questions.length === 0) {
+        console.log("regex1 falló");
+        while ((filteredQuestion = regex2.exec(rawText)) !== null) {
+          const questionText = filteredQuestion[1].trim(); // Pregunta
+          const rawAnswers = filteredQuestion[2]; // Respuestas
+          console.log(filteredQuestion);
+          
+          const answers = [];
+          let correctAnswer = null;
+          let filteredAnswer;
+
+          while ((filteredAnswer = answerRegex2.exec(rawAnswers)) !== null) {
+            const isCorrect = filteredAnswer[1] === "="; // Correcta?
+            const answerText = filteredAnswer[2].trim();
+            answers.push(answerText);
+            if (isCorrect) {
+              correctAnswer = answerText; // Guardar respuesta correcta
+            }
+          }
+
+          questions.push(`-${this.t('Question')}: ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
+          jsonQuestions.push({
+            type: "multipleChoice",
+            question: questionText,
+            answers: answers.join(", "),
+            correctAnswer: correctAnswer,
+          });
+        }
+      }
+
       return [questions, jsonQuestions];
     },
+
     parseQuestionsOpenAnswer(rawText) {
-      
-      const regex = /['"](.*?)['"]\{=\s*([^}]+)\}/g;
+      const regex1 = /(.+?)\[\s*=\s*([^\]]+)\]/g;
+      const regex2 = /['"](.*?)['"]\{=\s*([^}]+)\}/g;
+  
       let filteredText;
       const questions = [];
       const jsonQuestions = [];
-      while ((filteredText = regex.exec(rawText)) !== null) {
-        questions.push(`Pregunta: ${filteredText[1]}\nRespuesta Correcta: ${filteredText[2]}`);
+      
+      while ((filteredText = regex1.exec(rawText)) !== null) {
+        const questionText = filteredText[1].trim(); // Pregunta
+        const correctAnswer = filteredText[2].trim(); // Respuesta correcta
+        
+        questions.push(`${this.t('Question')} ${questionText}\n${this.t('CorrectAnswer')} ${correctAnswer}`);
         jsonQuestions.push({
-        type: "openAnswer",
-        question: filteredText[1],
-        answer: filteredText[2]
-      });
+          type: "openAnswer",
+          question: questionText,
+          answer: correctAnswer
+        });
       }
-      return [questions, jsonQuestions];
+      
+      if (questions.length === 0) {
+        while ((filteredText = regex2.exec(rawText)) !== null) {
+          const questionText = filteredText[1].trim(); // Pregunta
+          const correctAnswer = filteredText[2].trim(); // Respuesta correcta
+          
+          questions.push(`${this.t('Question')} ${questionText}\n${this.t('CorrectAnswer')} ${correctAnswer}`);
+          jsonQuestions.push({
+            type: "openAnswer",
+            question: questionText,
+            answer: correctAnswer
+          });
+        }
+      }
+      
+      return [questions, jsonQuestions]
     },
     parseQuestionTrueOrFalse(rawText) {
-      const regex = /::(True|False)Statement sobre ([^:]+)::'([^']+)'{(True|False)}/g;
+      const regex = /::(True|False)Statement sobre ([^:]+)::'([^']+)'\[(True|False)\]/g;
       let filteredText;
       const questions = [];
       const jsonQuestions = [];

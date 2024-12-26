@@ -17,6 +17,12 @@ export default {
     placeholderMultiplechoice: "Ingrese las instrucciones o el tema para una pregunta de opción múltiple. Ejemplo: 'Crea X preguntas de opción múltiple sobre la fotosíntesis.'",
     placeholderOpenasnwer: "Ingrese las instrucciones o el tema para una pregunta de respuesta abierta. Ejemplo: 'Crea X preguntas de respuesta abierta sobre la Revolución Francesa.'",
     placeholderTrueorFalse: "Ingrese las instrucciones o el tema para una pregunta de verdadero/falso. Ejemplo: 'Crea X preguntas de verdadero/falso sobre el calentamiento global.'",
-    placeholderDefault: "Seleccione un tipo de pregunta"
+    placeholderDefault: "Seleccione un tipo de pregunta",
+    caseMultipleChoice: " en el siguiente formato especificado GIFT: 'Question' [= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 ]",
+    caseOpenAnswer: " en el siguiente formato especificado GIFT: 'Question'[= Respuesta correcta]",
+    caseTrueOrFalse: " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'[True], si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'[False]",
+    Question: "Pregunta: ",
+    Answers: "Respuestas: ",
+    CorrectAnswer: "Respuesta Correcta: "
   };
   

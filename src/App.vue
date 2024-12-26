@@ -55,12 +55,16 @@
 <script>
 import InputComponent from "./components/InputComponent.vue";
 import OutputComponent from "./components/OutputComponent.vue";
-
+import { useI18n } from 'vue-i18n'; 
 export default {
   components: {
     InputComponent,
     OutputComponent,
   },
+  setup() {
+      const t  = useI18n();
+      return t;
+    },
   data() {
     return {
       user: null,
@@ -68,9 +72,9 @@ export default {
       isLoading: false,
       selectedQuestionTypeName: "",
       selectedQuestionType: "",
-      multipleChoiceText: " en el siguiente formato especificado GIFT: 'Question' {= Respuesta correcta ~Opción incorrecta 1 ~Opción incorrecta 2 ~Opción incorrecta 3 ~Opción incorrecta 4 }",
-      openAnswerText: " en el siguiente formato especificado: 'Question'{= Respuesta correcta}",
-      trueOrFalseText: " en el siguiente formato especificado GIFT, si pregunta verdadera ::TrueStatement sobre el 'tema'::'Question'{True}, si pregunta falsa ::FalseStatement sobre el 'tema'::'Question'{False}",
+      multipleChoiceText: this.$t('caseMultipleChoice'),
+      openAnswerText: this.$t('caseOpenAnswer'),
+      trueOrFalseText: this.$t('caseTrueOrFalse')
     };
   },
   mounted(){
@@ -78,6 +82,17 @@ export default {
     const user = urlParams.get('id'); 
     this.user = Number(user);
 
+  },
+  computed: {
+    multipleChoiceText() {
+      return this.$t('caseMultipleChoice');
+    },
+    openAnswerText() {
+      return this.$t('caseOpenAnswer');
+    },
+    trueOrFalseText() {
+      return this.$t('caseTrueOrFalse');
+    }
   },
   methods: {
     changeLanguage(lang) {
@@ -94,6 +109,8 @@ export default {
     modifyPrompt(prompt, selectedQuestionTypeName){
       const modifyPrompt = prompt + this.selectedQuestionType
       this.selectedQuestionTypeName = selectedQuestionTypeName
+      console.log(modifyPrompt);
+      
       this.generateQuestionAI(modifyPrompt);
     },
     async generateQuestionAI(prompt) {
