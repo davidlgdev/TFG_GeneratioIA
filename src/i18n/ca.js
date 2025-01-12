@@ -9,7 +9,7 @@ export default {
     GenerateButton: 'Generar',
     deleteAnswerButton: 'Eliminar resposta',
     modifyAnswerButton: 'Modificar resposta',
-    modifyOptionAlert: "Opció de modificar seleccionada per la pregunta: ",
+    modifyOptionAlert: "Opció de modificar (mantingueu el format especificat) seleccionada per la pregunta: ",
     questionUpdatedAlert: "Pregunta {index} actualitzada exitosament!",
     allQuestionsSentAlert: "Totes les preguntes enviades al Moodle!",
     SaveButton: 'Desar',

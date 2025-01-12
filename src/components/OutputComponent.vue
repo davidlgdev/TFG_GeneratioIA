@@ -83,7 +83,56 @@ export default {
     saveQuestion(index) {
       this.isEditing = false;
       this.selectedTextarea = null;
-      alert(this.t('questionUpdatedAlert', { index: index + 1 })); 
+
+      // Actualiza jsonQuestions con el contenido modificado
+      const modifiedQuestion = this.generatedQuestionsArray[index];
+      const questionData = this.jsonQuestions[index];
+      console.log(modifiedQuestion);
+      console.log(questionData);
+      if (!questionData) {
+        console.error(`No se encontró jsonQuestions en el índice ${index}`);
+        return;
+      }
+      if (questionData.type === "multipleChoice") {
+        const parts = modifiedQuestion.split('\n');
+        const questionText = parts[0].split(': ')[1].trim();
+        const answers = parts[1].split(': ')[1].trim().split(", ");
+        const correctAnswer = parts[2].split(': ')[1].trim();
+
+        this.jsonQuestions[index] = {
+          ...questionData,
+          question: questionText,
+          answers: answers.join(", "),
+          correctAnswer: correctAnswer,
+        };
+      } else if (questionData.type === "openAnswer") {
+        const parts = modifiedQuestion.split('\n');
+        const questionText = parts[0].split(': ')[1].trim();
+        const correctAnswer = parts[1].split(': ')[1].trim();
+
+        this.jsonQuestions[index] = {
+          ...questionData,
+          question: questionText,
+          answer: correctAnswer,
+        };
+      } else if (questionData.type === "True" || questionData.type === "False") {
+        const parts = modifiedQuestion.split('\n');
+        const newType = parts[0].split(': ')[1].trim();
+        const topic = parts[1].split(': ')[1].trim(); 
+        const text = parts[2].split(': ')[1].trim();
+        const correct = parts[3].split(': ')[1].trim();
+
+        this.jsonQuestions[index] = {
+          ...questionData,
+          type: newType,
+          topic: topic,
+          text: text,
+          correct: correct,
+        };
+      }
+      console.log("this.jsonQuestions:", this.jsonQuestions);
+      
+      alert(this.t('questionUpdatedAlert', { index: index + 1 }));
     },
     sendAllToMoodle() {
       alert(this.t('allQuestionsSentAlert')); 
