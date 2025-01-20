@@ -72,6 +72,7 @@ export default {
     handleOption(option, index) {
       if (option === "deleteAnswer") {
         this.generatedQuestionsArray.splice(index, 1); 
+        this.jsonQuestions.splice(index, 1); 
       } else if (option === "modifyAnswer") {
         alert(this.t('modifyOptionAlert', { question: this.generatedQuestionsArray[index] })); 
         this.isEditing = true;
