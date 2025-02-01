@@ -85,7 +85,7 @@ export default {
       this.isEditing = false;
       this.selectedTextarea = null;
 
-      // Actualiza jsonQuestions con el contenido modificado
+      // Update jsonQuestions with the modified content.
       const modifiedQuestion = this.generatedQuestionsArray[index];
       const questionData = this.jsonQuestions[index];
       console.log(modifiedQuestion);
@@ -165,8 +165,8 @@ export default {
       const regex1 = /(\d+\.\s+)["'](.+?)["']\s*\[(.*?)\]/g; 
       const answerRegex1 = /([=~])\s*([^~\]]+)/g;
 
-      const regex2 = /(.+?) \[(.+?)\]/g; // Captura la pregunta y las respuestas
-      const answerRegex2 = /(=|\~)(.+?)(?=(=|\~)|$)/g; // Captura cada respuesta individual
+      const regex2 = /(.+?) \[(.+?)\]/g; // Capture the question and answers.
+      const answerRegex2 = /(=|\~)(.+?)(?=(=|\~)|$)/g; // Capture each answer individually
 
 
       let filteredQuestion;
@@ -174,23 +174,23 @@ export default {
       const jsonQuestions = [];
 
       while ((filteredQuestion = regex1.exec(rawText)) !== null) {
-        const questionText = filteredQuestion[2].trim(); // Pregunta
-        const rawAnswers = filteredQuestion[3]; // Respuestas
+        const questionText = filteredQuestion[2].trim(); // Questions
+        const rawAnswers = filteredQuestion[3]; // Answers
 
         const answers = [];
         let correctAnswer = null;
         let filteredAnswer;
 
         while ((filteredAnswer = answerRegex1.exec(rawAnswers)) !== null) {
-          const isCorrect = filteredAnswer[1] === "="; // Correcta?
+          const isCorrect = filteredAnswer[1] === "="; // Correct?
           const answerText = filteredAnswer[2].trim();
           answers.push(answerText);
           if (isCorrect) {
-            correctAnswer = answerText; // Guardar respuesta correcta
+            correctAnswer = answerText; // Save the correct answer
           }
         }
 
-        questions.push(`-${this.t('Question')}: ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
+        questions.push(`-${this.t('Question')} ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
         jsonQuestions.push({
           type: "multipleChoice",
           question: questionText,
@@ -202,8 +202,8 @@ export default {
       if (questions.length === 0) {
         console.log("regex1 falló");
         while ((filteredQuestion = regex2.exec(rawText)) !== null) {
-          const questionText = filteredQuestion[1].trim(); // Pregunta
-          const rawAnswers = filteredQuestion[2]; // Respuestas
+          const questionText = filteredQuestion[1].trim(); // Question
+          const rawAnswers = filteredQuestion[2]; // Answers
           console.log(filteredQuestion);
           
           const answers = [];
@@ -211,15 +211,15 @@ export default {
           let filteredAnswer;
 
           while ((filteredAnswer = answerRegex2.exec(rawAnswers)) !== null) {
-            const isCorrect = filteredAnswer[1] === "="; // Correcta?
+            const isCorrect = filteredAnswer[1] === "="; // Correct?
             const answerText = filteredAnswer[2].trim();
             answers.push(answerText);
             if (isCorrect) {
-              correctAnswer = answerText; // Guardar respuesta correcta
+              correctAnswer = answerText; // Save the correct answer
             }
           }
 
-          questions.push(`-${this.t('Question')}: ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
+          questions.push(`-${this.t('Question')} ${questionText}\n-${this.t('Answers')} ${answers.join(", ")}\n-${this.t('CorrectAnswer')} ${correctAnswer}`);
           jsonQuestions.push({
             type: "multipleChoice",
             question: questionText,
@@ -241,8 +241,8 @@ export default {
       const jsonQuestions = [];
       
       while ((filteredText = regex1.exec(rawText)) !== null) {
-        const questionText = filteredText[1].trim(); // Pregunta
-        const correctAnswer = filteredText[2].trim(); // Respuesta correcta
+        const questionText = filteredText[1].trim(); // Question
+        const correctAnswer = filteredText[2].trim(); // Correct Answer
         
         questions.push(`${this.t('Question')} ${questionText}\n${this.t('CorrectAnswer')} ${correctAnswer}`);
         jsonQuestions.push({
@@ -254,8 +254,8 @@ export default {
       
       if (questions.length === 0) {
         while ((filteredText = regex2.exec(rawText)) !== null) {
-          const questionText = filteredText[1].trim(); // Pregunta
-          const correctAnswer = filteredText[2].trim(); // Respuesta correcta
+          const questionText = filteredText[1].trim(); // Question
+          const correctAnswer = filteredText[2].trim(); // Correct Answer
           
           questions.push(`${this.t('Question')} ${questionText}\n${this.t('CorrectAnswer')} ${correctAnswer}`);
           jsonQuestions.push({

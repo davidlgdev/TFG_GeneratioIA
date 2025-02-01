@@ -6,6 +6,6 @@ dotenv.config();
 
 const router = express.Router();
 
-router.post('/', handlePrompt); //Cualquier solicitud POST de la generacion IA sera manejada aqui
+router.post('/', handlePrompt); //Any POST request for AI generation will be handled here
 
 export default router;

@@ -3,9 +3,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url); //Para leer el URL del archivo
-const __dirname = dirname(__filename); // Extrae el path del directorio (quita el archivo)
-dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Crea un path absoluto saliendose una vez (de models al src) buscando el .env"
+const __filename = fileURLToPath(import.meta.url); //To read the file URL
+const __dirname = dirname(__filename); // Extract the directory path (remove the file)
+dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Create an absolute path going one level up (from models to src) and looking for the .env file
 
 const MISTRA_TOKEN = process.env.MISTRA_TOKEN;
 if(!MISTRA_TOKEN){
