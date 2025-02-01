@@ -11,12 +11,12 @@ class local_qbank_plugin_external extends external_api {
         global $DB, $CFG;
 
         
-        $param_array = preg_split('/--/', $param_string); // Separar los parametros
+        $param_array = preg_split('/--/', $param_string); // Separate the parameters
 
-        $categoryid = intval($param_array[0]); // ID de categoría de preguntas
-        $courseid = intval($param_array[1]);  // ID del curso
-        $format = $param_array[2];            // Formato de la pregunta
-        $questionsdata = $param_array[3];     // Datos de las preguntas
+        $categoryid = intval($param_array[0]); // Question category ID
+        $courseid = intval($param_array[1]);  // Course ID
+        $format = $param_array[2];            // Question format
+        $questionsdata = $param_array[3];     // Question data
 
         if (!$category = $DB->get_record('question_categories', ['id' => $categoryid])) {
             throw new invalid_parameter_exception("Categoría con ID {$categoryid} no encontrada.");
@@ -25,7 +25,7 @@ class local_qbank_plugin_external extends external_api {
             throw new invalid_parameter_exception("Curso con ID {$courseid} no encontrado.");
         }
 
-        // Validar contexto
+        // Validate context
         $context = context::instance_by_id($category->contextid);
         if (!$context) {
             throw new invalid_parameter_exception("El contextid {$category->contextid} no es válido.");
@@ -34,39 +34,39 @@ class local_qbank_plugin_external extends external_api {
             throw new invalid_parameter_exception("El contextlevel del contexto {$category->contextid} no es válido. Se esperaba CONTEXT_COURSE o CONTEXT_COURSECAT.");
         }
 
-        // Validar permisos del usuario
+        // Validate user permissions
         self::validate_context($context);
         require_capability('moodle/question:add', $context);
 
         $associated_courseid = null;
-        if ($context->contextlevel === CONTEXT_COURSE) { // Es solo para un curso
+        if ($context->contextlevel === CONTEXT_COURSE) { // It is only for one course
             $associated_courseid = $context->instanceid;
-        } elseif ($context->contextlevel === CONTEXT_COURSECAT) { // Es para una categoría de cursos
+        } elseif ($context->contextlevel === CONTEXT_COURSECAT) { // It is for a course category
             $associated_courseid = $DB->get_field('course', 'id', ['category' => $context->instanceid], IGNORE_MULTIPLE);
         } else {
-            // Contextlevel invalido.
+            // Invalid Contextlevel
             throw new invalid_parameter_exception("El contextlevel del contexto {$context->id} no es válido. Se esperaba CONTEXT_COURSE o CONTEXT_COURSECAT.");
         }
-        //No existe un curso
+        //There is no course.
         if (!$associated_courseid) {
             throw new invalid_parameter_exception("No se pudo determinar un curso para este contexto.");
         }
         
-        // Verificar formato para importar
+        // Verify the format for import
         $formatfile = $CFG->dirroot . "/question/format/{$format}/format.php";
         if (!file_exists($formatfile)) {
             throw new invalid_parameter_exception("Formato de importación no existe: {$format}");
         }
-        //Directorio de archivos temporales de XAMPP
+        //Temporary file directory of XAMPP, substitute for the real path
         $xampp_temp = "E:/Programas/xampp/tmp/";
-        //Se crea un archivo temporal para guardar las preguntas
+        //A temporary file is created to store the questions
         $timestamp = time();
         $random = uniqid();
         $tempfile = $xampp_temp . "qimport_{$timestamp}_{$random}.gift";
         if (file_put_contents($tempfile, $questionsdata) === false) {
             throw new Exception('Error al escribir el fichero temporal: ' . error_get_last()['message']);
         }
-        // Se instancia una clase del formato
+        // A class of the format is instantiated
         require_once($formatfile);  
         $classname = "qformat_{$format}";
         $qformat = new $classname();
@@ -74,12 +74,12 @@ class local_qbank_plugin_external extends external_api {
         $qformat->setContexts($context->contextlevel);
         $qformat->setCourse($associated_courseid);
         $qformat->setFilename($tempfile);
-        // Se procesan las preguntas
+        // The questions are processed
         if ($qformat->importpreprocess() && $qformat->importprocess() && $qformat->importpostprocess()) {
             unlink($tempfile);
             return true;
         } else {
-            $error = $qformat->get_error(); // Obtener el mensaje de error
+            $error = $qformat->get_error(); // Get the error message
             throw new moodle_exception('Error al importar preguntas: ' . $error);
         }
          // Delete the temporary file after import
